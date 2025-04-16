@@ -12,8 +12,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "ai-helper.helloWorld",
-        "title": "Hello World"
+        "command": "ai-helper.openFileGroup",
+        "title": "Open file group"
       }
     ]
   },
