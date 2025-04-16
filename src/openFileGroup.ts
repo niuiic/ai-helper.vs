@@ -37,7 +37,6 @@ export const openFileGroup = async () => {
   const taskFiles = task.files
     .map((x) => x.replace(/\$\{(.*?)\}/g, (_, x) => taskInputs[x]!))
     .map((x) => join(projectRoot, x))
-  vscode.window.showWarningMessage(taskFiles.join('  \\ '))
 
   // %% open files %%
   taskFiles.forEach((x) =>

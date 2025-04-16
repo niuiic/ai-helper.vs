@@ -14,7 +14,7 @@
     "commands": [
       {
         "command": "ai-helper.openFileGroup",
-        "title": "Open file group"
+        "title": "AI: Open file group"
       }
     ]
   },
