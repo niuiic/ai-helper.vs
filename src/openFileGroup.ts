@@ -3,39 +3,50 @@ import * as vscode from 'vscode'
 import { config } from './config'
 import { join } from 'path'
 import { projectRoot } from './utils'
-
-interface Task {
-  name: string
-  input: string[]
-  files: string[]
-}
+import { Option, optionSchema } from './option'
 
 export const openFileGroup = async () => {
-  // %% get tasks %%
+  // %% get option %%
   if (!existsSync(config.taskFile)) {
     vscode.window.showErrorMessage('Task file not found')
     return
   }
-  const tasks: Task[] = JSON.parse(readFileSync(config.taskFile, 'utf-8'))
+  let option: Option
+  try {
+    option = optionSchema.parse(
+      JSON.parse(readFileSync(config.taskFile, 'utf-8'))
+    )
+  } catch (e) {
+    vscode.window.showErrorMessage(JSON.stringify(e))
+    return
+  }
 
   // %% select task %%
-  const taskName = await vscode.window.showQuickPick(tasks.map((t) => t.name))
-  const task = tasks.find((x) => x.name === taskName)
+  const taskName = await vscode.window.showQuickPick(
+    option.tasks.map((t) => t.name)
+  )
+  const task = option.tasks.find((x) => x.name === taskName)
   if (!task) {
     return
   }
 
   // %% collect input %%
-  const inputs = await Promise.all(
-    task.input.map((x) => vscode.window.showInputBox({ title: x }))
-  )
-  const taskInputs = Object.fromEntries(
-    task.input.map((x, i) => [x, inputs[i]])
-  )
+  let inputs: Record<string, string> = {}
+  const transformInput = (source: string, method: string) =>
+    source.slice(0, 1).toUpperCase() + source.slice(1)
+  for (const x of task.input) {
+    if (typeof x === 'string') {
+      inputs[x] = (await vscode.window.showInputBox({ title: x })) ?? ''
+    } else {
+      inputs[x.name] = inputs[x.source]
+        ? transformInput(inputs[x.source], x.transform)
+        : ''
+    }
+  }
 
   // %% files %%
   const taskFiles = task.files
-    .map((x) => x.replace(/\$\{(.*?)\}/g, (_, x) => taskInputs[x]!))
+    .map((x) => x.replace(/\$\{(.*?)\}/g, (_, x) => inputs[x]!))
     .map((x) => join(projectRoot, x))
 
   // %% open files %%
