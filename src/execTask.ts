@@ -94,7 +94,10 @@ export const execTask = async () => {
 
   // %% copy chart %%
   if (task.chart) {
-    const chart = task.chart.replace(/\$\{(.*?)\}/g, (_, x) => inputs[x]!)
+    const prefix =
+      taskFiles.length > 0 ? `引用${taskFiles.join('、')}的内容。` : ''
+    const chart =
+      prefix + task.chart.replace(/\$\{(.*?)\}/g, (_, x) => inputs[x]!)
     await vscode.env.clipboard.writeText(chart)
   }
 }
