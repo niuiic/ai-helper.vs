@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import { openFileGroup } from './openFileGroup'
+import { execTask } from './execTask'
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
-    'ai-helper.openFileGroup',
-    openFileGroup
+    'ai-helper.execTask',
+    execTask
   )
   context.subscriptions.push(disposable)
 }
