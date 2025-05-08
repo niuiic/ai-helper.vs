@@ -85,11 +85,14 @@ export const execTask = async () => {
     .map((x) => join(projectRoot, x))
 
   // %% open files %%
-  taskFiles.forEach((x) =>
-    vscode.window.showTextDocument(vscode.Uri.file(x), {
-      preview: false,
-      viewColumn: vscode.ViewColumn.Active
-    })
+  taskFiles.forEach((x, i) =>
+    setTimeout(() => {
+      vscode.window.showTextDocument(vscode.Uri.file(x), {
+        preview: false,
+        viewColumn: vscode.ViewColumn.Active,
+        preserveFocus: false
+      })
+    }, i * 500)
   )
 
   // %% copy chart %%
